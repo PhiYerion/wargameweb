@@ -13,7 +13,7 @@ pub fn App() -> impl IntoView {
         <Stylesheet id="leptos" href="/pkg/leptos_start.css"/>
 
         // sets the document title
-        <Title text="Welcome to Leptos"/>
+        <Title text="War Game"/>
 
         // content for this welcome page
         <Router>
@@ -30,13 +30,14 @@ pub fn App() -> impl IntoView {
 /// Renders the home page of your application.
 #[component]
 fn HomePage() -> impl IntoView {
+    use crate::pages::{HomePage, NavBar};
     // Creates a reactive value to update the button
-    let (count, set_count) = create_signal(0);
-    let on_click = move |_| set_count.update(|count| *count += 1);
 
     view! {
-        <h1>"Welcome to Leptos!"</h1>
-        <button on:click=on_click>"Click Me: " {count}</button>
+        <body class="text-slate-200 bg-slate-700 divide-y-8 divide-stone-100 divide-solid">
+            <NavBar/>
+            <HomePage/>
+        </body>
     }
 }
 

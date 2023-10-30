@@ -30,6 +30,9 @@ ssr = [
   "leptos_router/ssr",
 ]
 
+[profile.dev]
+opt-level = 0
+
 [profile.release]
 opt-level = 3
 strip = true
