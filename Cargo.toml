@@ -44,8 +44,6 @@ inherits = "release"
 opt-level = 'z'
 codegen-units = 1
 panic = "abort"
-debug-assertions = false
-overflow-checks = false
 
 [package.metadata.leptos]
 rustflags = ["-Zlocation-detail=none"]
