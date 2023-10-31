@@ -6,7 +6,7 @@ export LEPTOS_SITE_ADDR="127.0.0.1:3000"
 export LEPTOS_RELOAD_PORT="3001"
 export LEPTOS_STYLE_FILE="style/main-tailwind.scss"
 
-npx tailwindcss -i ./style/main.scss "$LEPTOS_STYLE_FILE"
+npx tailwindcss -i ./style/main.scss -o "$LEPTOS_STYLE_FILE"
 cargo leptos build --release
 
 mkdir temp

@@ -1,4 +1,4 @@
-use crate::pages::home_page::card::Card;
+use super::*;
 
 #[derive(Clone)]
 pub struct Deck {
