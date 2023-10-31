@@ -1861,6 +1861,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "quick-error"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a993555f31e5a609f617c12db6250dedcac1b0a85076912c436e6fc9b2c8e6a3"
+
+[[package]]
 name = "quote"
 version = "1.0.33"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2024,6 +2030,17 @@ dependencies = [
  "wasm-bindgen-futures",
  "web-sys",
  "winreg",
+]
+
+[[package]]
+name = "resolver"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c73212cb60830cfbdaa7a9d89d85b92ef8a58d72ca48c2874451131a37a6cc5"
+dependencies = [
+ "quick-error",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -2706,6 +2723,7 @@ dependencies = [
  "leptos_meta",
  "leptos_router",
  "rand",
+ "resolver",
  "statrs",
  "wasm-bindgen",
 ]

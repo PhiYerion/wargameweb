@@ -1,10 +1,10 @@
-use crate::pages::home_page::{card::Card, card::Rank, card::Suit, deck::Deck};
+use super::*;
 use leptos::{leptos_dom::logging, *};
 
 #[component]
-fn ViewCard(card: Card) -> impl IntoView {
+fn ViewCard(card: Card, #[prop(optional)] class: &'static str) -> impl IntoView {
     view! {
-        <div class="flex">
+        <div class={class}>
             {match card.suit {
                 Suit::Spades => "♠ ",
                 Suit::Hearts => "♥ ",
@@ -33,51 +33,6 @@ fn ViewCard(card: Card) -> impl IntoView {
     }
 }
 
-enum RoundResult<'a> {
-    RoundWinner(&'a mut Deck),
-    Winner(Deck),
-}
-
-#[inline]
-fn round<'a>(decks: &'a mut Vec<&'a mut Deck>) -> RoundResult<'a> {
-    let mut cards: Vec<Card> = Vec::with_capacity(decks.len());
-
-    // dummy card as placeholder
-    let mut highest_card = Card {
-        suit: Suit::Spades,
-        rank: 0,
-    };
-
-    let mut highest_deck: Option<&mut Deck> = None;
-    for deck in decks {
-        match deck.cards.pop() {
-            Some(card) => {
-                if highest_deck.is_none() || card.rank > highest_card.rank {
-                    highest_card = card.clone();
-                    highest_deck = Some(deck);
-                } else if card.rank == highest_card.rank {
-                    let tie_winner = round(&mut vec![deck, highest_deck.unwrap()]);
-                    match tie_winner {
-                        RoundResult::RoundWinner(mut tie_winner) => {
-                            highest_deck = Some(&mut tie_winner);
-                        }
-                        RoundResult::Winner(tie_winner) => {
-                            return RoundResult::Winner(tie_winner);
-                        }
-                    }
-                }
-                cards.push(card);
-            }
-            None => {
-                return RoundResult::Winner(deck.clone());
-            }
-        }
-    }
-    highest_deck.unwrap().cards.append(&mut cards);
-
-    RoundResult::RoundWinner(highest_deck.unwrap())
-}
-
 #[component]
 pub fn Board(players: usize) -> impl IntoView {
     // Error handling
@@ -92,21 +47,72 @@ pub fn Board(players: usize) -> impl IntoView {
     // Create deck
     let cards_per_player = 52 / players as usize;
     let mut decks: Vec<Deck> = Vec::with_capacity(players);
-    for _ in 0..players {
+    for i in 0..players {
         logging::console_log("Creating deck");
-        let deck = Deck::new(cards_per_player);
+        let deck = Deck::new(cards_per_player, i);
         decks.push(deck);
     }
 
+    // View for deck list
+    let (decks_view, set_deck_view) = create_signal(decks.clone());
+    // View for header above deck list
+    let (header_view, set_header_view) = create_signal("Round 1".to_string());
+    // Round counter
+    let mut rounds_count = 1;
+
+    // Round button handler
+    let on_click = move |_| {
+        logging::console_log("Round button clicked");
+        let (decks_result, result) = round(decks_view());
+        let decks = decks_result;
+        rounds_count += 1;
+
+        match result {
+            RoundResult::Continue => {
+                logging::console_log("Round continues");
+                set_header_view(format!("Round {}", rounds_count));
+                set_deck_view(decks);
+            }
+            RoundResult::Winner => {
+                logging::console_log("Round winner");
+                set_header_view(format!("Player {} wins!", decks[0].player));
+                set_deck_view(decks);
+            }
+            RoundResult::Tie => {
+                logging::console_log("Round tie");
+                set_header_view("WAR!".to_string());
+                set_deck_view(decks);
+            }
+        }
+    };
+
     view! {
-        <div>
-            {decks.into_iter().map(|deck| {
-                deck.cards.into_iter().map(|card| {
-                    view! {
-                        <ViewCard card=card/>
-                    }
+        <div class="w-full">
+            <div class="flex flex-wrap self-center justify-center items-center">
+                <h1 class="px-10 text-xl font-bold"> { move || header_view() } </h1>
+                <button
+                    class="bg-transparent text-blue-300 font-semibold hover:text-blue-200 py-1 px-2 border border-blue-500 hover:border-blue-400 rounded"
+                    on:click={on_click}>Next Round</button>
+            </div>
+            <div class="flex flex-wrap self-center justify-center">
+                { move ||
+                    decks_view().iter().map(|deck| {
+                        view! {
+                            <div class="p-8 mx-10">
+                                <h2 class="font-bold">Player {deck.player}</h2>
+                                {deck.cards.iter().map(|card| {
+                                    view! {
+                                        <ViewCard card={card.clone()} />
+                                }}).collect_view()}
+                                {deck.captured_cards.iter().map(|card| {
+                                    view! {
+                                        <ViewCard class="text-red-600" card={card.clone()} />
+                                }}).collect_view()}
+                            </div>
+                        }
+                    }).collect_view()
                 }
-            ).collect_view()}).collect_view()}
+            </div>
         </div>
     }
 }
