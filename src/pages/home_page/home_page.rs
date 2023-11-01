@@ -1,5 +1,7 @@
 use leptos::*;
 
+/// HomePage with a form to choose number of players
+/// This will send a get request to /game with the number of players
 #[component]
 pub fn HomePage() -> impl IntoView {
     view! {

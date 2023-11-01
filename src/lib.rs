@@ -2,6 +2,8 @@ pub mod app;
 pub mod pages;
 use cfg_if::cfg_if;
 
+// Taken from leptos/start example
+// Simple hydration functionality
 cfg_if! {
 if #[cfg(feature = "hydrate")] {
 

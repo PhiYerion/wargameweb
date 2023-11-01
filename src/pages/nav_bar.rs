@@ -1,5 +1,6 @@
 use leptos::*;
 
+/// Simple NavBar that displays the title as a link to /home
 #[component]
 pub fn NavBar() -> impl IntoView {
     view! {

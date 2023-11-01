@@ -1,3 +1,6 @@
+// This was taken from leptos/start example with configurations and modifcations
+// added to work with wargameweb
+
 #[cfg(feature = "ssr")]
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
